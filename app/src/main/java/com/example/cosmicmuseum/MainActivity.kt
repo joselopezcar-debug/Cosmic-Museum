@@ -3,45 +3,89 @@ package com.example.cosmicmuseum
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.room.Room
+import com.example.cosmicmuseum.data.local.AppDatabase
+import com.example.cosmicmuseum.data.repository.NasaRepository
+import com.example.cosmicmuseum.data.repository.TicketRepository
+import com.example.cosmicmuseum.ui.navigation.AppNavigation
 import com.example.cosmicmuseum.ui.theme.CosmicMuseumTheme
+import com.example.cosmicmuseum.viewmodel.EventsViewModel
+import com.example.cosmicmuseum.viewmodel.TicketDetailViewModel
+import com.example.cosmicmuseum.viewmodel.TicketFormViewModel
+import com.example.cosmicmuseum.viewmodel.TicketListViewModel
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            CosmicMuseumTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+
+        // Room Database
+        val database = Room.databaseBuilder(
+            applicationContext,
+            AppDatabase::class.java,
+            "cosmic_museum_db"
+        ).build()
+
+        val ticketDao = database.ticketDao()
+
+        // Repositories
+        val ticketRepository = TicketRepository(ticketDao)
+        val nasaRepository = NasaRepository()
+
+        // ViewModels
+        val ticketListViewModel = ViewModelProvider(
+            this,
+            object : ViewModelProvider.Factory {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    return TicketListViewModel(ticketRepository) as T
                 }
             }
+        )[TicketListViewModel::class.java]
+
+        val ticketDetailViewModel = ViewModelProvider(
+            this,
+            object : ViewModelProvider.Factory {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    return TicketDetailViewModel(ticketRepository) as T
+                }
+            }
+        )[TicketDetailViewModel::class.java]
+
+        val ticketFormViewModel = ViewModelProvider(
+            this,
+            object : ViewModelProvider.Factory {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    return TicketFormViewModel(ticketRepository) as T
+                }
+            }
+        )[TicketFormViewModel::class.java]
+
+        val eventsViewModel = ViewModelProvider(
+            this,
+            object : ViewModelProvider.Factory {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    return EventsViewModel(nasaRepository) as T
+                }
+            }
+        )[EventsViewModel::class.java]
+
+        setContent {
+
+            CosmicMuseumTheme {
+
+                AppNavigation(
+                    ticketListViewModel = ticketListViewModel,
+                    ticketDetailViewModel = ticketDetailViewModel,
+                    ticketFormViewModel = ticketFormViewModel,
+                    eventsViewModel = eventsViewModel
+                )
+            }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    CosmicMuseumTheme {
-        Greeting("Android")
     }
 }

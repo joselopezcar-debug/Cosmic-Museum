@@ -1,5 +1,13 @@
 package com.example.cosmicmuseum.data.local
 
-class TicketRepository(
-    private val dao: TicketDao
+import androidx.room.*
+
+@Database(
+    entities = [TicketEntity::class],
+    version = 1,
+    exportSchema = false
 )
+abstract class AppDatabase : RoomDatabase() {
+
+    abstract fun ticketDao(): TicketDao
+}

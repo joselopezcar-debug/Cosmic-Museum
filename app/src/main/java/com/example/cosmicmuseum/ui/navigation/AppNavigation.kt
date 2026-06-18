@@ -6,13 +6,22 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.cosmicmuseum.ui.screens.TicketDetailScreen
 import com.example.cosmicmuseum.ui.screens.EventsScreen
+import com.example.cosmicmuseum.ui.screens.TicketDetailScreen
 import com.example.cosmicmuseum.ui.screens.TicketFormScreen
 import com.example.cosmicmuseum.ui.screens.TicketListScreen
+import com.example.cosmicmuseum.viewmodel.EventsViewModel
+import com.example.cosmicmuseum.viewmodel.TicketDetailViewModel
+import com.example.cosmicmuseum.viewmodel.TicketFormViewModel
+import com.example.cosmicmuseum.viewmodel.TicketListViewModel
 
 @Composable
-fun AppNavigation() {
+fun AppNavigation(
+    ticketListViewModel: TicketListViewModel,
+    ticketDetailViewModel: TicketDetailViewModel,
+    ticketFormViewModel: TicketFormViewModel,
+    eventsViewModel: EventsViewModel
+) {
 
     val navController = rememberNavController()
 
@@ -21,13 +30,16 @@ fun AppNavigation() {
         startDestination = "tickets"
     ) {
 
+        // Lista de tickets
         composable("tickets") {
 
             TicketListScreen(
-                navController = navController
+                navController = navController,
+                viewModel = ticketListViewModel
             )
         }
 
+        // Detalle
         composable(
             route = "detail/{ticketId}",
             arguments = listOf(
@@ -35,20 +47,29 @@ fun AppNavigation() {
                     type = NavType.IntType
                 }
             )
-        ) {
+        ) { backStackEntry ->
+
+            val ticketId =
+                backStackEntry.arguments?.getInt("ticketId") ?: 0
 
             TicketDetailScreen(
-                navController = navController
+                navController = navController,
+                ticketId = ticketId,
+                viewModel = ticketDetailViewModel
             )
         }
 
+        // Crear nuevo ticket
         composable("form") {
 
             TicketFormScreen(
-                navController = navController
+                navController = navController,
+                ticketId = null,
+                viewModel = ticketFormViewModel
             )
         }
 
+        // Editar ticket existente
         composable(
             route = "form/{ticketId}",
             arguments = listOf(
@@ -56,17 +77,24 @@ fun AppNavigation() {
                     type = NavType.IntType
                 }
             )
-        ) {
+        ) { backStackEntry ->
+
+            val ticketId =
+                backStackEntry.arguments?.getInt("ticketId")
 
             TicketFormScreen(
-                navController = navController
+                navController = navController,
+                ticketId = ticketId,
+                viewModel = ticketFormViewModel
             )
         }
 
+        // Pantalla NASA
         composable("events") {
 
             EventsScreen(
-                navController = navController
+                navController = navController,
+                viewModel = eventsViewModel
             )
         }
     }
