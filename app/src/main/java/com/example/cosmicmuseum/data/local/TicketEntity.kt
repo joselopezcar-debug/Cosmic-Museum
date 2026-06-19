@@ -10,15 +10,15 @@ data class TicketEntity(
 
     val nombreVisitante: String,
 
-    val fechaVisita: String,
+    val fechaVisita: Long,
 
     val tipoEntrada: String,
 
     val cantidadPersonas: Int,
 
-    val precio: Double,
-
     val codigoReserva: String,
+
+    val precioTotal: Double,
 
     val estado: String
 )

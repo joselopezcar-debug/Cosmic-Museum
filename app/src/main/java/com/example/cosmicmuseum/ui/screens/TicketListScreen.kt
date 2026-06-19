@@ -1,5 +1,6 @@
 package com.example.cosmicmuseum.ui.screens
 
+import java.text.SimpleDateFormat
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
@@ -12,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.cosmicmuseum.data.local.TicketEntity
 import com.example.cosmicmuseum.viewmodel.TicketListViewModel
+import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -86,6 +88,13 @@ private fun TicketItem(
     onClick: () -> Unit
 ) {
 
+    val fechaFormateada = remember(ticket.fechaVisita) {
+        SimpleDateFormat(
+            "dd/MM/yyyy",
+            Locale.getDefault()
+        ).format(Date(ticket.fechaVisita))
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -104,10 +113,16 @@ private fun TicketItem(
                 style = MaterialTheme.typography.titleMedium
             )
 
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(
+                modifier = Modifier.height(4.dp)
+            )
 
             Text(
-                text = "Fecha: ${ticket.fechaVisita}"
+                text = "Reserva: ${ticket.codigoReserva}"
+            )
+
+            Text(
+                text = "Fecha: $fechaFormateada"
             )
 
             Text(
@@ -115,7 +130,7 @@ private fun TicketItem(
             )
 
             Text(
-                text = "Código: ${ticket.codigoReserva}"
+                text = "Estado: ${ticket.estado}"
             )
         }
     }

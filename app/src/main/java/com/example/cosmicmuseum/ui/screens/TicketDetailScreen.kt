@@ -7,6 +7,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.cosmicmuseum.viewmodel.TicketDetailViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,6 +37,15 @@ fun TicketDetailScreen(
 
         ticket?.let { currentTicket ->
 
+            val fechaFormateada = remember(currentTicket.fechaVisita) {
+                SimpleDateFormat(
+                    "dd/MM/yyyy",
+                    Locale.getDefault()
+                ).format(
+                    Date(currentTicket.fechaVisita)
+                )
+            }
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -43,34 +55,36 @@ fun TicketDetailScreen(
             ) {
 
                 Text(
+                    text = "Código de Reserva: ${currentTicket.codigoReserva}"
+                )
+
+                Text(
                     text = "Visitante: ${currentTicket.nombreVisitante}"
                 )
 
                 Text(
-                    text = "Fecha: ${currentTicket.fechaVisita}"
+                    text = "Fecha: $fechaFormateada"
                 )
 
                 Text(
-                    text = "Tipo: ${currentTicket.tipoEntrada}"
+                    text = "Tipo de Entrada: ${currentTicket.tipoEntrada}"
                 )
 
                 Text(
-                    text = "Cantidad: ${currentTicket.cantidadPersonas}"
+                    text = "Cantidad de Personas: ${currentTicket.cantidadPersonas}"
                 )
 
                 Text(
-                    text = "Precio: ${currentTicket.precio}"
-                )
-
-                Text(
-                    text = "Código: ${currentTicket.codigoReserva}"
+                    text = "Precio Total: S/ ${currentTicket.precioTotal}"
                 )
 
                 Text(
                     text = "Estado: ${currentTicket.estado}"
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(
+                    modifier = Modifier.height(16.dp)
+                )
 
                 Button(
                     onClick = {
@@ -83,7 +97,7 @@ fun TicketDetailScreen(
                     Text("Editar")
                 }
 
-                Button(
+                OutlinedButton(
                     onClick = {
                         viewModel.deleteTicket()
                         navController.popBackStack()
