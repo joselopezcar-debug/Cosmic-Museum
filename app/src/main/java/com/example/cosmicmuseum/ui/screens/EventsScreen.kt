@@ -40,7 +40,15 @@ fun EventsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("EXPLORACIÓN", style = MaterialTheme.typography.labelLarge.copy(letterSpacing = 2.sp)) },
+                title = { 
+                    Text(
+                        "EXPLORACIÓN", 
+                        style = MaterialTheme.typography.labelLarge.copy(
+                            letterSpacing = 2.sp,
+                            fontWeight = FontWeight.Bold
+                        ) 
+                    ) 
+                },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = null)
@@ -51,9 +59,10 @@ fun EventsScreen(
         },
         containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
+        // Aplicamos paddingValues aquí para corregir el error y manejar el layout correctamente
         Box(modifier = Modifier
             .fillMaxSize()
-            .padding(paddingValues) // Aplicamos el padding aquí para corregir el error de Lint
+            .padding(paddingValues)
         ) {
             if (isLoading) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -67,8 +76,8 @@ fun EventsScreen(
                         .fillMaxSize()
                         .verticalScroll(rememberScrollState())
                 ) {
-                    // Header Image with Parallax-like feel
-                    Box(modifier = Modifier.fillMaxWidth().height(450.dp)) {
+                    // Imagen Principal con efecto de profundidad
+                    Box(modifier = Modifier.fillMaxWidth().height(400.dp)) {
                         AsyncImage(
                             model = data.url,
                             contentDescription = null,
@@ -81,24 +90,24 @@ fun EventsScreen(
                                 .background(
                                     Brush.verticalGradient(
                                         colors = listOf(Color.Transparent, MaterialTheme.colorScheme.background),
-                                        startY = 300f
+                                        startY = 100f
                                     )
                                 )
                         )
                     }
 
-                    // Content
+                    // Contenido Informativo
                     Column(
                         modifier = Modifier
                             .padding(horizontal = 24.dp)
-                            .offset(y = (-60).dp)
+                            .offset(y = (-40).dp)
                     ) {
                         Card(
                             shape = RoundedCornerShape(28.dp),
                             colors = CardDefaults.cardColors(
                                 containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)
                             ),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
                             border = CardDefaults.outlinedCardBorder()
                         ) {
                             Column(modifier = Modifier.padding(24.dp)) {
@@ -133,7 +142,7 @@ fun EventsScreen(
                             )
                         )
                         
-                        Spacer(modifier = Modifier.height(100.dp))
+                        Spacer(modifier = Modifier.height(32.dp))
                     }
                 }
             }
