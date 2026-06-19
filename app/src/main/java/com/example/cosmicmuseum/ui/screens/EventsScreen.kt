@@ -51,7 +51,6 @@ fun EventsScreen(
         },
         containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
-        // Aplicamos paddingValues aquí para corregir el error de Lint y asegurar que el contenido se vea correctamente
         Box(modifier = Modifier
             .fillMaxSize()
             .padding(paddingValues)
