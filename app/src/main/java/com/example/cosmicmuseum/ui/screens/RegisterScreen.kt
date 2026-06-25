@@ -12,22 +12,25 @@ import com.example.cosmicmuseum.viewmodel.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(
+fun RegisterScreen(
     navController: NavController,
     viewModel: AuthViewModel
 ) {
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
 
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
     val isLoggedIn by viewModel.isLoggedIn.collectAsState()
 
     LaunchedEffect(isLoggedIn) {
-        if (isLoggedIn != null) {
+
+        if (isLoggedIn) {
+
             navController.navigate("tickets") {
-                popUpTo("login") {
+                popUpTo("register") {
                     inclusive = true
                 }
             }
@@ -38,7 +41,7 @@ fun LoginScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text("Iniciar Sesión")
+                    Text("Crear Cuenta")
                 }
             )
         }
@@ -54,7 +57,7 @@ fun LoginScreen(
         ) {
 
             Text(
-                text = "Cosmic Museum",
+                text = "Registro Cosmic Museum",
                 style = MaterialTheme.typography.headlineMedium
             )
 
@@ -85,6 +88,20 @@ fun LoginScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OutlinedTextField(
+                value = confirmPassword,
+                onValueChange = {
+                    confirmPassword = it
+                },
+                label = {
+                    Text("Confirmar contraseña")
+                },
+                visualTransformation = PasswordVisualTransformation(),
+                modifier = Modifier.fillMaxWidth()
+            )
+
             Spacer(modifier = Modifier.height(16.dp))
 
             error?.let {
@@ -99,19 +116,26 @@ fun LoginScreen(
 
             Button(
                 onClick = {
-                    viewModel.login(
-                        email = email,
-                        password = password
-                    )
+
+                    if (password == confirmPassword) {
+
+                        viewModel.register(
+                            email = email,
+                            password = password
+                        )
+                    }
                 },
                 enabled = !isLoading,
                 modifier = Modifier.fillMaxWidth()
             ) {
 
                 if (isLoading) {
+
                     CircularProgressIndicator()
+
                 } else {
-                    Text("Ingresar")
+
+                    Text("Registrarse")
                 }
             }
 
@@ -119,10 +143,11 @@ fun LoginScreen(
 
             TextButton(
                 onClick = {
-                    navController.navigate("register")
+                    navController.popBackStack()
                 }
             ) {
-                Text("Crear cuenta")
+
+                Text("Ya tengo una cuenta")
             }
         }
     }

@@ -7,10 +7,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
 import com.example.cosmicmuseum.data.local.AppDatabase
+import com.example.cosmicmuseum.data.repository.AuthRepository
 import com.example.cosmicmuseum.data.repository.NasaRepository
 import com.example.cosmicmuseum.data.repository.TicketRepository
 import com.example.cosmicmuseum.ui.navigation.AppNavigation
 import com.example.cosmicmuseum.ui.theme.CosmicMuseumTheme
+import com.example.cosmicmuseum.viewmodel.AuthViewModel
 import com.example.cosmicmuseum.viewmodel.EventsViewModel
 import com.example.cosmicmuseum.viewmodel.TicketDetailViewModel
 import com.example.cosmicmuseum.viewmodel.TicketFormViewModel
@@ -33,6 +35,7 @@ class MainActivity : ComponentActivity() {
         // Repositories
         val ticketRepository = TicketRepository(ticketDao)
         val nasaRepository = NasaRepository()
+        val authRepository = AuthRepository()
 
         // ViewModels
         val ticketListViewModel = ViewModelProvider(
@@ -75,15 +78,32 @@ class MainActivity : ComponentActivity() {
             }
         )[EventsViewModel::class.java]
 
+        val authViewModel = ViewModelProvider(
+            this,
+            object : ViewModelProvider.Factory {
+
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(
+                    modelClass: Class<T>
+                ): T {
+
+                    return AuthViewModel(
+                        authRepository
+                    ) as T
+                }
+            }
+        )[AuthViewModel::class.java]
+
         setContent {
 
             CosmicMuseumTheme {
 
                 AppNavigation(
+                    authViewModel = authViewModel,
                     ticketListViewModel = ticketListViewModel,
                     ticketDetailViewModel = ticketDetailViewModel,
                     ticketFormViewModel = ticketFormViewModel,
-                    eventsViewModel = eventsViewModel
+                    eventsViewModel = eventsViewModel,
                 )
             }
         }
