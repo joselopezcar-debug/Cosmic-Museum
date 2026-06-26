@@ -4,15 +4,17 @@ import android.Manifest
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import androidx.annotation.RequiresPermission
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import com.example.cosmicmuseum.MainActivity
 import com.example.cosmicmuseum.R
 
 object TicketNotification {
 
-    @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     fun showNotification(
         context: Context,
         title: String,
@@ -44,6 +46,16 @@ object TicketNotification {
                 .setAutoCancel(true)
                 .setContentIntent(pendingIntent)
                 .build()
+
+        if (
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
 
         NotificationManagerCompat
             .from(context)
