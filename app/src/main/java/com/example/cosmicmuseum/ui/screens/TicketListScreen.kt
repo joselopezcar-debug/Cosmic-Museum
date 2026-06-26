@@ -23,13 +23,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.cosmicmuseum.data.local.TicketEntity
+import com.example.cosmicmuseum.viewmodel.AuthViewModel
 import com.example.cosmicmuseum.viewmodel.TicketListViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TicketListScreen(
     navController: NavController,
-    viewModel: TicketListViewModel
+    viewModel: TicketListViewModel,
+    authViewModel: AuthViewModel
 ) {
     val tickets by viewModel.tickets.collectAsState()
 
@@ -45,9 +47,41 @@ fun TicketListScreen(
                 actions = {
                     IconButton(
                         onClick = { navController.navigate("events") },
-                        modifier = Modifier.clip(CircleShape).background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .background(
+                                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                            )
                     ) {
-                        Icon(Icons.Default.RocketLaunch, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                        Icon(
+                            Icons.Default.RocketLaunch,
+                            contentDescription = "NASA",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    IconButton(
+                        onClick = {
+
+                            authViewModel.logout()
+
+                            navController.navigate("login") {
+                                popUpTo(0)
+                            }
+                        },
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .background(
+                                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                            )
+                    ) {
+                        Icon(
+                            Icons.Default.Logout,
+                            contentDescription = "Cerrar sesión",
+                            tint = MaterialTheme.colorScheme.error
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.largeTopAppBarColors(containerColor = Color.Transparent)

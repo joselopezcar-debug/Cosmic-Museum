@@ -46,7 +46,7 @@ fun AppNavigation(
 
             LoginScreen(
                 navController = navController,
-                viewModel = authViewModel
+                viewModel = authViewModel,
             )
         }
 
@@ -55,7 +55,7 @@ fun AppNavigation(
 
             RegisterScreen(
                 navController = navController,
-                viewModel = authViewModel
+                viewModel = authViewModel,
             )
         }
 
@@ -64,7 +64,8 @@ fun AppNavigation(
 
             TicketListScreen(
                 navController = navController,
-                viewModel = ticketListViewModel
+                viewModel = ticketListViewModel,
+                authViewModel = authViewModel
             )
         }
 

@@ -7,13 +7,13 @@ import kotlinx.coroutines.flow.Flow
 interface TicketDao {
 
     @Insert
-    suspend fun insert(ticket: TicketEntity)
+    suspend fun insert(ticket: TicketEntity): Long
 
     @Update
-    suspend fun update(ticket: TicketEntity)
+    suspend fun update(ticket: TicketEntity): Int
 
     @Delete
-    suspend fun delete(ticket: TicketEntity)
+    suspend fun delete(ticket: TicketEntity): Int
 
     @Query("SELECT * FROM tickets")
     fun getAllTickets(): Flow<List<TicketEntity>>
