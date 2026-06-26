@@ -23,11 +23,24 @@ import com.example.cosmicmuseum.viewmodel.EventsViewModel
 import com.example.cosmicmuseum.viewmodel.TicketDetailViewModel
 import com.example.cosmicmuseum.viewmodel.TicketFormViewModel
 import com.example.cosmicmuseum.viewmodel.TicketListViewModel
+import com.google.firebase.messaging.FirebaseMessaging
 
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        FirebaseMessaging
+            .getInstance()
+            .token
+            .addOnCompleteListener { task ->
+
+                if (task.isSuccessful) {
+
+                    val token = task.result
+
+                    println("FCM TOKEN: $token")
+                }
+            }
         NotificationHelper.createNotificationChannel(this)
 
         if (
