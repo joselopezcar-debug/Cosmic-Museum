@@ -1,6 +1,5 @@
 package com.example.cosmicmuseum.ui.screens
 
-import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -57,6 +56,8 @@ fun TicketFormScreen(
     var expandedTipo by remember { mutableStateOf(false) }
     var expandedEstado by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    val cosmicBackground = Color(0xFF0B0D17)
+    val cosmicAccent = Color(0xFF4FC3F7)
 
     LaunchedEffect(ticketId) { if (ticketId != null) viewModel.loadTicket(ticketId) }
     LaunchedEffect(currentTicket) {
@@ -74,30 +75,50 @@ fun TicketFormScreen(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("CONFIGURAR MISIÓN", style = MaterialTheme.typography.labelLarge.copy(letterSpacing = 2.sp)) },
+                title = { 
+                    Text(
+                        if (ticketId == null) "NUEVA MISIÓN" else "RECONFIGURAR MISIÓN", 
+                        style = MaterialTheme.typography.labelLarge.copy(letterSpacing = 2.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                    ) 
+                },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.Close, null)
+                        Icon(Icons.Default.Close, null, tint = Color.White)
                     }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.Transparent)
             )
         },
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = cosmicBackground
     ) { paddingValues ->
-        Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            cosmicBackground,
+                            Color(0xFF14172B)
+                        )
+                    )
+                )
+        ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
                     .padding(24.dp),
-                verticalArrangement = Arrangement.spacedBy(20.dp)
+                verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
-                // Sección: Identificación
-                Text("DATOS DEL COMANDANTE", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
+                Text(
+                    "DATOS DEL COMANDANTE", 
+                    style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 1.sp), 
+                    color = cosmicAccent
+                )
                 
-                MissionTextField(nombreVisitante, { nombreVisitante = it }, "Nombre del Astronauta", Icons.Default.Person)
-                MissionTextField(fechaVisita, { fechaVisita = it }, "Fecha Estelar (dd/MM/yyyy)", Icons.Default.Event)
+                MissionTextField(nombreVisitante, { nombreVisitante = it }, "Nombre del Astronauta", Icons.Default.Person, cosmicAccent)
+                MissionTextField(fechaVisita, { fechaVisita = it }, "Fecha Estelar (dd/MM/yyyy)", Icons.Default.Event, cosmicAccent)
 
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     Box(modifier = Modifier.weight(1f)) {
@@ -109,17 +130,34 @@ fun TicketFormScreen(
                                 label = { Text("Membresía") },
                                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedTipo) },
                                 modifier = Modifier.menuAnchor().fillMaxWidth(),
-                                shape = RoundedCornerShape(16.dp)
+                                shape = RoundedCornerShape(16.dp),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedTextColor = Color.White,
+                                    unfocusedTextColor = Color.White,
+                                    focusedBorderColor = cosmicAccent,
+                                    unfocusedBorderColor = Color.White.copy(alpha = 0.3f),
+                                    focusedLabelColor = cosmicAccent,
+                                    unfocusedLabelColor = Color.White.copy(alpha = 0.6f),
+                                    focusedTrailingIconColor = cosmicAccent,
+                                    unfocusedTrailingIconColor = Color.White.copy(alpha = 0.6f)
+                                )
                             )
-                            ExposedDropdownMenu(expanded = expandedTipo, onDismissRequest = { expandedTipo = false }) {
+                            ExposedDropdownMenu(
+                                expanded = expandedTipo, 
+                                onDismissRequest = { expandedTipo = false },
+                                modifier = Modifier.background(Color(0xFF1C2130))
+                            ) {
                                 tiposEntrada.forEach { op ->
-                                    DropdownMenuItem(text = { Text(op) }, onClick = { tipoEntrada = op; expandedTipo = false })
+                                    DropdownMenuItem(
+                                        text = { Text(op, color = Color.White) }, 
+                                        onClick = { tipoEntrada = op; expandedTipo = false }
+                                    )
                                 }
                             }
                         }
                     }
-                    Box(modifier = Modifier.width(100.dp)) {
-                        MissionTextField(cantidadPersonas, { cantidadPersonas = it }, "Cant.", Icons.Default.Group)
+                    Box(modifier = Modifier.width(110.dp)) {
+                        MissionTextField(cantidadPersonas, { cantidadPersonas = it }, "Cant.", Icons.Default.Group, cosmicAccent)
                     }
                 }
 
@@ -132,33 +170,62 @@ fun TicketFormScreen(
                         leadingIcon = { Icon(Icons.Default.SettingsSuggest, null) },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedEstado) },
                         modifier = Modifier.menuAnchor().fillMaxWidth(),
-                        shape = RoundedCornerShape(16.dp)
+                        shape = RoundedCornerShape(16.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White,
+                            focusedBorderColor = cosmicAccent,
+                            unfocusedBorderColor = Color.White.copy(alpha = 0.3f),
+                            focusedLabelColor = cosmicAccent,
+                            unfocusedLabelColor = Color.White.copy(alpha = 0.6f),
+                            focusedLeadingIconColor = cosmicAccent,
+                            unfocusedLeadingIconColor = Color.White.copy(alpha = 0.6f),
+                            focusedTrailingIconColor = cosmicAccent,
+                            unfocusedTrailingIconColor = Color.White.copy(alpha = 0.6f)
+                        )
                     )
-                    ExposedDropdownMenu(expanded = expandedEstado, onDismissRequest = { expandedEstado = false }) {
+                    ExposedDropdownMenu(
+                        expanded = expandedEstado, 
+                        onDismissRequest = { expandedEstado = false },
+                        modifier = Modifier.background(Color(0xFF1C2130))
+                    ) {
                         estados.forEach { op ->
-                            DropdownMenuItem(text = { Text(op) }, onClick = { estado = op; expandedEstado = false })
+                            DropdownMenuItem(
+                                text = { Text(op, color = Color.White) }, 
+                                onClick = { estado = op; expandedEstado = false }
+                            )
                         }
                     }
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Tarjeta de Presupuesto con Glassmorphism
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(24.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f)),
-                    border = CardDefaults.outlinedCardBorder()
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color(0xFF1C2130).copy(alpha = 0.8f)
+                    ),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.1f))
                 ) {
                     Row(
                         modifier = Modifier.padding(24.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
-                            Text("CRÉDITOS TOTALES", style = MaterialTheme.typography.labelSmall)
-                            Text("S/ $precioCalculado", style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.primary))
+                            Text("CRÉDITOS TOTALES", style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 1.sp), color = Color.White.copy(alpha = 0.6f))
+                            Text(
+                                "S/ $precioCalculado", 
+                                style = MaterialTheme.typography.headlineMedium.copy(
+                                    fontWeight = FontWeight.Black, 
+                                    color = cosmicAccent
+                                )
+                            )
                         }
-                        Icon(Icons.Default.MonetizationOn, null, modifier = Modifier.size(40.dp), tint = MaterialTheme.colorScheme.primary)
+                        Icon(
+                            Icons.Default.MonetizationOn, 
+                            null, 
+                            modifier = Modifier.size(40.dp), 
+                            tint = cosmicAccent
+                        )
                     }
                 }
 
@@ -186,25 +253,49 @@ fun TicketFormScreen(
 
                         navController.popBackStack()
                     },
-                    modifier = Modifier.fillMaxWidth().height(64.dp),
-                    shape = RoundedCornerShape(20.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(64.dp),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = cosmicAccent,
+                        contentColor = Color.Black
+                    ),
+                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
                 ) {
-                    Text("CONFIRMAR LANZAMIENTO", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
+                    Icon(Icons.Default.RocketLaunch, null)
+                    Spacer(Modifier.width(12.dp))
+                    Text(
+                        if (ticketId == null) "INICIAR LANZAMIENTO" else "ACTUALIZAR TRAYECTORIA", 
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                    )
                 }
+                
+                Spacer(modifier = Modifier.height(40.dp))
             }
         }
     }
 }
 
 @Composable
-fun MissionTextField(value: String, onValueChange: (String) -> Unit, label: String, icon: ImageVector) {
+fun MissionTextField(value: String, onValueChange: (String) -> Unit, label: String, icon: ImageVector, accentColor: Color) {
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         label = { Text(label) },
-        leadingIcon = { Icon(icon, null, modifier = Modifier.size(20.dp)) },
+        leadingIcon = { Icon(icon, null, modifier = Modifier.size(20.dp), tint = accentColor) },
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        singleLine = true
+        singleLine = true,
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedTextColor = Color.White,
+            unfocusedTextColor = Color.White,
+            focusedBorderColor = accentColor,
+            unfocusedBorderColor = Color.White.copy(alpha = 0.3f),
+            focusedLabelColor = accentColor,
+            unfocusedLabelColor = Color.White.copy(alpha = 0.6f),
+            focusedLeadingIconColor = accentColor,
+            unfocusedLeadingIconColor = Color.White.copy(alpha = 0.6f)
+        )
     )
 }

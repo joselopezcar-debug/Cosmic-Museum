@@ -34,14 +34,27 @@ fun TicketListScreen(
     authViewModel: AuthViewModel
 ) {
     val tickets by viewModel.tickets.collectAsState()
+    val cosmicBackground = Color(0xFF0B0D17)
+    val cosmicAccent = Color(0xFF4FC3F7) // Brighter blue for visibility
 
     Scaffold(
         topBar = {
             LargeTopAppBar(
                 title = {
                     Column {
-                        Text("COSMIC MUSEUM", style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Black, letterSpacing = 2.sp))
-                        Text("Explorando el universo", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
+                        Text(
+                            "BITÁCORA ESPACIAL",
+                            style = MaterialTheme.typography.headlineMedium.copy(
+                                fontWeight = FontWeight.Black,
+                                letterSpacing = 2.sp,
+                                color = Color.White
+                            )
+                        )
+                        Text(
+                            "Centro de Misiones Cosmic Museum",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = cosmicAccent // Changed from primary
+                        )
                     }
                 },
                 actions = {
@@ -49,14 +62,12 @@ fun TicketListScreen(
                         onClick = { navController.navigate("events") },
                         modifier = Modifier
                             .clip(CircleShape)
-                            .background(
-                                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-                            )
+                            .background(Color.White.copy(alpha = 0.1f))
                     ) {
                         Icon(
                             Icons.Default.RocketLaunch,
-                            contentDescription = "NASA",
-                            tint = MaterialTheme.colorScheme.primary
+                            contentDescription = "Explorar",
+                            tint = cosmicAccent // Changed from primary
                         )
                     }
 
@@ -64,34 +75,33 @@ fun TicketListScreen(
 
                     IconButton(
                         onClick = {
-
                             authViewModel.logout()
-
                             navController.navigate("login") {
                                 popUpTo(0)
                             }
                         },
                         modifier = Modifier
                             .clip(CircleShape)
-                            .background(
-                                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-                            )
+                            .background(Color.White.copy(alpha = 0.1f))
                     ) {
                         Icon(
                             Icons.Default.Logout,
                             contentDescription = "Cerrar sesión",
-                            tint = MaterialTheme.colorScheme.error
+                            tint = Color(0xFFFF5252) // Explicit bright red
                         )
                     }
                 },
-                colors = TopAppBarDefaults.largeTopAppBarColors(containerColor = Color.Transparent)
+                colors = TopAppBarDefaults.largeTopAppBarColors(
+                    containerColor = Color.Transparent,
+                    scrolledContainerColor = cosmicBackground.copy(alpha = 0.95f)
+                )
             )
         },
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = { navController.navigate("form") },
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
+                containerColor = cosmicAccent, // Changed from primary
+                contentColor = Color.Black,
                 shape = RoundedCornerShape(20.dp),
                 elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 8.dp)
             ) {
@@ -100,19 +110,31 @@ fun TicketListScreen(
                 Text("NUEVA MISIÓN", fontWeight = FontWeight.Bold)
             }
         },
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = cosmicBackground
     ) { paddingValues ->
-        Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            cosmicBackground,
+                            Color(0xFF14172B)
+                        )
+                    )
+                )
+        ) {
             if (tickets.isEmpty()) {
-                EmptyStateUI()
+                EmptyStateUI(cosmicAccent)
             } else {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 100.dp),
+                    contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     itemsIndexed(tickets) { index, ticket ->
-                        AnimatedTicketItem(index, ticket) {
+                        AnimatedTicketItem(index, ticket, cosmicAccent) {
                             navController.navigate("detail/${ticket.id}")
                         }
                     }
@@ -123,64 +145,87 @@ fun TicketListScreen(
 }
 
 @Composable
-fun AnimatedTicketItem(index: Int, ticket: TicketEntity, onClick: () -> Unit) {
+fun AnimatedTicketItem(index: Int, ticket: TicketEntity, accentColor: Color, onClick: () -> Unit) {
     var isVisible by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { isVisible = true }
 
     AnimatedVisibility(
         visible = isVisible,
-        enter = fadeIn(tween(600, delayMillis = index * 100)) + 
-                slideInHorizontally(tween(600, delayMillis = index * 100)) { -it / 3 }
+        enter = fadeIn(tween(600, delayMillis = index * 80)) +
+                slideInVertically(tween(600, delayMillis = index * 80)) { it / 2 }
     ) {
         Card(
-            modifier = Modifier.fillMaxWidth().clickable { onClick() },
-            shape = RoundedCornerShape(28.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onClick() },
+            shape = RoundedCornerShape(24.dp),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+                containerColor = Color(0xFF1C2130).copy(alpha = 0.7f)
             ),
-            border = CardDefaults.outlinedCardBorder()
+            border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.1f))
         ) {
-            Row(modifier = Modifier.padding(20.dp), verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier.size(56.dp).clip(RoundedCornerShape(16.dp))
-                        .background(MaterialTheme.colorScheme.primaryContainer),
-                    contentAlignment = Alignment.Center
+            Row(
+                modifier = Modifier.padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Surface(
+                    modifier = Modifier.size(52.dp),
+                    shape = RoundedCornerShape(14.dp),
+                    color = accentColor.copy(alpha = 0.15f)
                 ) {
-                    Icon(
-                        imageVector = when(ticket.tipoEntrada) {
-                            "VIP" -> Icons.Default.Stars
-                            "Estudiante" -> Icons.Default.School
-                            else -> Icons.Default.ConfirmationNumber
-                        },
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                        modifier = Modifier.size(28.dp)
-                    )
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(
+                            imageVector = when (ticket.tipoEntrada) {
+                                "VIP" -> Icons.Default.Stars
+                                "Estudiante" -> Icons.Default.School
+                                "Evento Especial" -> Icons.Default.AutoAwesome
+                                else -> Icons.Default.ConfirmationNumber
+                            },
+                            contentDescription = null,
+                            tint = accentColor,
+                            modifier = Modifier.size(28.dp)
+                        )
+                    }
                 }
 
                 Spacer(Modifier.width(16.dp))
 
                 Column(Modifier.weight(1f)) {
-                    Text(ticket.nombreVisitante, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
-                    Text(ticket.codigoReserva, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.secondary)
+                    Text(
+                        ticket.nombreVisitante,
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                        color = Color.White
+                    )
+                    Text(
+                        ticket.codigoReserva,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.White.copy(alpha = 0.6f)
+                    )
                 }
 
                 Column(horizontalAlignment = Alignment.End) {
-                    Text("S/ ${ticket.precioTotal}", style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.primary))
-                    
-                    val statusColor = when(ticket.estado) {
-                        "Confirmada" -> Color(0xFF00E676)
-                        "Pendiente" -> Color(0xFFFFD600)
-                        else -> Color(0xFFFF5252)
+                    Text(
+                        "S/ ${ticket.precioTotal}",
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Black,
+                            color = accentColor
+                        )
+                    )
+
+                    val statusColor = when (ticket.estado) {
+                        "Confirmada" -> Color(0xFF00C853)
+                        "Pendiente" -> Color(0xFFFFAB00)
+                        else -> Color(0xFFFF3D00)
                     }
-                    
+
                     Surface(
-                        color = statusColor.copy(alpha = 0.1f),
-                        shape = RoundedCornerShape(8.dp)
+                        color = statusColor.copy(alpha = 0.15f),
+                        shape = RoundedCornerShape(6.dp),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, statusColor.copy(alpha = 0.3f))
                     ) {
                         Text(
                             ticket.estado.uppercase(),
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                             color = statusColor
                         )
@@ -192,14 +237,24 @@ fun AnimatedTicketItem(index: Int, ticket: TicketEntity, onClick: () -> Unit) {
 }
 
 @Composable
-fun EmptyStateUI() {
+fun EmptyStateUI(accentColor: Color) {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Icon(Icons.Default.Explore, null, modifier = Modifier.size(100.dp), tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))
+        Icon(
+            Icons.Default.Explore,
+            null,
+            modifier = Modifier.size(80.dp),
+            tint = accentColor.copy(alpha = 0.2f)
+        )
         Spacer(Modifier.height(16.dp))
-        Text("SIN MISIONES REGISTRADAS", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f))
+        Text(
+            "SIN MISIONES ACTIVAS",
+            style = MaterialTheme.typography.labelLarge,
+            color = Color.White.copy(alpha = 0.4f),
+            letterSpacing = 2.sp
+        )
     }
 }

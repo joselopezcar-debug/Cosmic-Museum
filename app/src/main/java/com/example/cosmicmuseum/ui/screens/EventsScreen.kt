@@ -13,6 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -32,6 +33,8 @@ fun EventsScreen(
 ) {
     val nasaData by viewModel.nasaData.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val cosmicBackground = Color(0xFF0B0D17)
+    val cosmicAccent = Color(0xFF4FC3F7) // Azul brillante para contraste
 
     LaunchedEffect(Unit) {
         viewModel.loadApod()
@@ -40,25 +43,38 @@ fun EventsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("EXPLORACIÓN", style = MaterialTheme.typography.labelLarge.copy(letterSpacing = 2.sp)) },
+                title = { 
+                    Text(
+                        "EXPLORACIÓN ESPACIAL", 
+                        style = MaterialTheme.typography.labelLarge.copy(
+                            letterSpacing = 2.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                    ) 
+                },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = null)
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Volver", tint = Color.White)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
             )
         },
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = cosmicBackground
     ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues) // Corregido: Aplicando paddingValues del Scaffold
+                .padding(paddingValues)
         ) {
             if (isLoading) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(strokeWidth = 2.dp)
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(48.dp),
+                        strokeWidth = 3.dp,
+                        color = cosmicAccent
+                    )
                 }
             }
 
@@ -68,8 +84,10 @@ fun EventsScreen(
                         .fillMaxSize()
                         .verticalScroll(rememberScrollState())
                 ) {
-                    // Header Image with Parallax-like feel
-                    Box(modifier = Modifier.fillMaxWidth().height(450.dp)) {
+                    // Header Image
+                    Box(modifier = Modifier
+                        .fillMaxWidth()
+                        .height(400.dp)) {
                         AsyncImage(
                             model = data.url,
                             contentDescription = null,
@@ -81,60 +99,79 @@ fun EventsScreen(
                                 .fillMaxSize()
                                 .background(
                                     Brush.verticalGradient(
-                                        colors = listOf(Color.Transparent, MaterialTheme.colorScheme.background),
-                                        startY = 300f
+                                        colors = listOf(
+                                            Color.Transparent,
+                                            cosmicBackground.copy(alpha = 0.6f),
+                                            cosmicBackground
+                                        ),
+                                        startY = 250f
                                     )
                                 )
                         )
                     }
 
-                    // Content
+                    // Content Section
                     Column(
                         modifier = Modifier
                             .padding(horizontal = 24.dp)
-                            .offset(y = (-60).dp)
+                            .offset(y = (-40).dp)
                     ) {
-                        Card(
-                            shape = RoundedCornerShape(28.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)
-                            ),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-                            border = CardDefaults.outlinedCardBorder()
+                        Surface(
+                            shape = RoundedCornerShape(24.dp),
+                            color = Color(0xFF1C2130).copy(alpha = 0.9f),
+                            tonalElevation = 4.dp,
+                            border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.1f))
                         ) {
                             Column(modifier = Modifier.padding(24.dp)) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(Icons.Default.RocketLaunch, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Icon(
+                                        Icons.Default.RocketLaunch, 
+                                        null, 
+                                        tint = cosmicAccent, 
+                                        modifier = Modifier.size(18.dp)
+                                    )
                                     Spacer(Modifier.width(8.dp))
-                                    Text(data.date, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
+                                    Text(
+                                        data.date, 
+                                        style = MaterialTheme.typography.labelMedium, 
+                                        color = cosmicAccent,
+                                        fontWeight = FontWeight.Bold
+                                    )
                                 }
                                 Spacer(Modifier.height(12.dp))
                                 Text(
                                     text = data.title,
-                                    style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Black)
+                                    style = MaterialTheme.typography.headlineSmall.copy(
+                                        fontWeight = FontWeight.Black,
+                                        lineHeight = 32.sp
+                                    ),
+                                    color = Color.White
                                 )
                             }
                         }
 
-                        Spacer(modifier = Modifier.height(24.dp))
+                        Spacer(modifier = Modifier.height(32.dp))
 
                         Text(
-                            text = "RESUMEN DE MISIÓN",
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.secondary,
-                            modifier = Modifier.padding(bottom = 12.dp)
+                            text = "INFORME DE MISIÓN",
+                            style = MaterialTheme.typography.labelLarge.copy(letterSpacing = 2.sp),
+                            color = cosmicAccent,
+                            modifier = Modifier.padding(bottom = 16.dp)
                         )
 
                         Text(
                             text = data.explanation,
                             style = MaterialTheme.typography.bodyLarge.copy(
-                                lineHeight = 28.sp,
+                                lineHeight = 26.sp,
                                 textAlign = TextAlign.Justify,
-                                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
+                                color = Color.White.copy(alpha = 0.85f)
                             )
                         )
                         
-                        Spacer(modifier = Modifier.height(100.dp))
+                        Spacer(modifier = Modifier.height(80.dp))
                     }
                 }
             }
