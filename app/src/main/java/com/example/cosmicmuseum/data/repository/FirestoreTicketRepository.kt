@@ -63,18 +63,11 @@ class FirestoreTicketRepository {
         uid: String
     ): List<TicketEntity> {
 
-        val snapshot =
-            db.collection("users")
-                .document(uid)
-                .collection("tickets")
-                .get()
-                .await()
-
-        return snapshot.documents.mapNotNull {
-
-            it.toObject(
-                TicketEntity::class.java
-            )
-        }
+        return db.collection("users")
+            .document(uid)
+            .collection("tickets")
+            .get()
+            .await()
+            .toObjects(TicketEntity::class.java)
     }
 }
