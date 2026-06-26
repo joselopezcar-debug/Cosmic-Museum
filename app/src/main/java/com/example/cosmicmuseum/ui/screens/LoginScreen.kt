@@ -24,8 +24,10 @@ fun LoginScreen(
     val error by viewModel.error.collectAsState()
     val isLoggedIn by viewModel.isLoggedIn.collectAsState()
 
+
+
     LaunchedEffect(isLoggedIn) {
-        if (isLoggedIn != null) {
+        if (isLoggedIn) {
             navController.navigate("tickets") {
                 popUpTo("login") {
                     inclusive = true
