@@ -1,8 +1,12 @@
 package com.example.cosmicmuseum
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
@@ -11,6 +15,7 @@ import com.example.cosmicmuseum.data.repository.AuthRepository
 import com.example.cosmicmuseum.data.repository.FirestoreTicketRepository
 import com.example.cosmicmuseum.data.repository.NasaRepository
 import com.example.cosmicmuseum.data.repository.TicketRepository
+import com.example.cosmicmuseum.notifications.NotificationHelper
 import com.example.cosmicmuseum.ui.navigation.AppNavigation
 import com.example.cosmicmuseum.ui.theme.CosmicMuseumTheme
 import com.example.cosmicmuseum.viewmodel.AuthViewModel
@@ -23,6 +28,29 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        NotificationHelper.createNotificationChannel(this)
+
+        if (
+            android.os.Build.VERSION.SDK_INT >=
+            android.os.Build.VERSION_CODES.TIRAMISU
+        ) {
+
+            if (
+                ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(
+                        Manifest.permission.POST_NOTIFICATIONS
+                    ),
+                    100
+                )
+            }
+        }
 
         // Room Database
         val database = Room.databaseBuilder(

@@ -15,11 +15,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.cosmicmuseum.data.local.TicketEntity
+import com.example.cosmicmuseum.notifications.TicketNotification
 import com.example.cosmicmuseum.viewmodel.TicketFormViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -54,6 +56,7 @@ fun TicketFormScreen(
     val estados = listOf("Pendiente", "Confirmada", "Cancelada")
     var expandedTipo by remember { mutableStateOf(false) }
     var expandedEstado by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     LaunchedEffect(ticketId) { if (ticketId != null) viewModel.loadTicket(ticketId) }
     LaunchedEffect(currentTicket) {
@@ -174,6 +177,13 @@ fun TicketFormScreen(
                             estado = estado
                         )
                         viewModel.saveTicket(ticket)
+
+                        TicketNotification.showNotification(
+                            context,
+                            "Reserva registrada",
+                            "Tu misión ${ticket.codigoReserva} fue creada"
+                        )
+
                         navController.popBackStack()
                     },
                     modifier = Modifier.fillMaxWidth().height(64.dp),
