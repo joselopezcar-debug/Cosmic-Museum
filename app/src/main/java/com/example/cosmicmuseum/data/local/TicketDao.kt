@@ -20,4 +20,19 @@ interface TicketDao {
 
     @Query("SELECT * FROM tickets WHERE id = :id")
     suspend fun getTicketById(id: Int): TicketEntity?
+
+    @Query(
+        "SELECT * FROM tickets WHERE firestoreId = :firestoreId"
+    )
+    suspend fun getTicketByFirestoreId(
+        firestoreId: String
+    ): TicketEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(
+        tickets: List<TicketEntity>
+    )
+
+    @Query("DELETE FROM tickets")
+    suspend fun deleteAll()
 }

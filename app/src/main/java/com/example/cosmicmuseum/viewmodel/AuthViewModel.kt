@@ -3,13 +3,15 @@ package com.example.cosmicmuseum.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cosmicmuseum.data.repository.AuthRepository
+import com.example.cosmicmuseum.data.repository.TicketRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class AuthViewModel(
-    private val repository: AuthRepository
+    private val repository: AuthRepository,
+    private val ticketRepository: TicketRepository
 ) : ViewModel() {
 
     private val _isLoggedIn =
@@ -47,6 +49,8 @@ class AuthViewModel(
                     password
                 )
 
+                ticketRepository.syncFromFirestore()
+
                 _isLoggedIn.value = true
 
             } catch (e: Exception) {
@@ -78,6 +82,8 @@ class AuthViewModel(
                     password
                 )
 
+                ticketRepository.syncFromFirestore()
+
                 _isLoggedIn.value = true
 
             } catch (e: Exception) {
@@ -88,6 +94,20 @@ class AuthViewModel(
             } finally {
 
                 _isLoading.value = false
+            }
+        }
+    }
+
+    init {
+
+        if (repository.isUserLoggedIn()) {
+
+            viewModelScope.launch {
+
+                try {
+                    ticketRepository.syncFromFirestore()
+                } catch (_: Exception) {
+                }
             }
         }
     }

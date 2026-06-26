@@ -8,17 +8,19 @@ data class TicketEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 
-    val nombreVisitante: String,
+    val firestoreId: String = "",
 
-    val fechaVisita: Long,
+    val nombreVisitante: String = "",
 
-    val tipoEntrada: String,
+    val fechaVisita: Long = 0L,
 
-    val cantidadPersonas: Int,
+    val tipoEntrada: String = "",
 
-    val codigoReserva: String,
+    val cantidadPersonas: Int = 0,
 
-    val precioTotal: Double,
+    val codigoReserva: String = "",
 
-    val estado: String
+    val precioTotal: Double = 0.0,
+
+    val estado: String = ""
 )

@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
 import com.example.cosmicmuseum.data.local.AppDatabase
 import com.example.cosmicmuseum.data.repository.AuthRepository
+import com.example.cosmicmuseum.data.repository.FirestoreTicketRepository
 import com.example.cosmicmuseum.data.repository.NasaRepository
 import com.example.cosmicmuseum.data.repository.TicketRepository
 import com.example.cosmicmuseum.ui.navigation.AppNavigation
@@ -28,14 +29,25 @@ class MainActivity : ComponentActivity() {
             applicationContext,
             AppDatabase::class.java,
             "cosmic_museum_db"
-        ).build()
+        )
+            .fallbackToDestructiveMigration()
+            .build()
 
         val ticketDao = database.ticketDao()
 
         // Repositories
-        val ticketRepository = TicketRepository(ticketDao)
-        val nasaRepository = NasaRepository()
         val authRepository = AuthRepository()
+
+        val firestoreTicketRepository =
+            FirestoreTicketRepository()
+
+        val ticketRepository =
+            TicketRepository(
+                ticketDao,
+                firestoreTicketRepository,
+                authRepository
+            )
+        val nasaRepository = NasaRepository()
 
         // ViewModels
         val ticketListViewModel = ViewModelProvider(
@@ -88,7 +100,8 @@ class MainActivity : ComponentActivity() {
                 ): T {
 
                     return AuthViewModel(
-                        authRepository
+                        authRepository,
+                        ticketRepository
                     ) as T
                 }
             }
